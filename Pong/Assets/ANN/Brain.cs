@@ -25,7 +25,7 @@ public class Brain : MonoBehaviour
 
     List<double> Run(double bx, double by, double bvx, double bvy, double px, double py, double pv, bool train)
     {
-        List<double> inputs  = new List<double>();
+        List<double> inputs = new List<double>();
         List<double> outputs = new List<double>();
 
         inputs.Add(bx);
@@ -39,7 +39,7 @@ public class Brain : MonoBehaviour
 
         outputs.Add(pv);
 
-        if(train)
+        if (train)
         {
             return (ann.Train(inputs, outputs));
         }
@@ -60,20 +60,49 @@ public class Brain : MonoBehaviour
 
         RaycastHit2D hit = Physics2D.Raycast(ball.transform.position, brb.velocity, 1000, layerMask);
 
-        if(hit.collider != null && hit.collider.gameObject.tag == "backwall")
+        //normal calculations
+        //if(hit.collider != null && hit.collider.gameObject.tag == "backwall")
+        //{
+        //    float dy = (hit.point.y - paddle.transform.position.y);
+
+        //    output = Run(ball.transform.position.x, ball.transform.position.y,
+        //                brb.velocity.x, brb.velocity.y,
+        //                paddle.transform.position.x, paddle.transform.position.y,
+        //                dy, true);
+
+        //    yval = (float)output[0];
+        //}
+        //else
+        //{
+        //    yval = 0;
+        //}
+
+        //reflection calculation
+        if (hit.collider != null)
         {
-            float dy = (hit.point.y - paddle.transform.position.y);
+            if (hit.collider.gameObject.tag == "tops") //reflect ogg top
+            {
+                Vector3 reflection = Vector3.Reflect(brb.velocity, hit.normal);
+                hit = Physics2D.Raycast(hit.point, reflection, 100, layerMask);
+            }
 
-            output = Run(ball.transform.position.x, ball.transform.position.y,
-                        brb.velocity.x, brb.velocity.y,
-                        paddle.transform.position.x, paddle.transform.position.y,
-                        dy, true);
+            if (hit.collider != null && hit.collider.gameObject.tag == "backwall")
+            {
+                float dy = (hit.point.y - paddle.transform.position.y);
 
-            yval = (float)output[0];
+                output = Run(ball.transform.position.x, ball.transform.position.y,
+                            brb.velocity.x, brb.velocity.y,
+                            paddle.transform.position.x, paddle.transform.position.y,
+                            dy, true);
+
+                yval = (float)output[0];
+
+            }
         }
+
         else
         {
             yval = 0;
         }
-    }
+    } 
 }
