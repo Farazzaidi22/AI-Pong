@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MoveBall : MonoBehaviour {
 
@@ -10,8 +11,13 @@ public class MoveBall : MonoBehaviour {
 	public AudioSource blip;
 	public AudioSource blop;
 
-	// Use this for initialization
-	void Start () {
+    int score_point = 5;
+
+    public Text player_score;
+    public Text bot_score;
+
+    // Use this for initialization
+    void Start () {
 		rb = this.GetComponent<Rigidbody2D>();
 		ballStartPosition = this.transform.position;
 		ResetBall();
@@ -19,11 +25,23 @@ public class MoveBall : MonoBehaviour {
 
 	void OnCollisionEnter2D(Collision2D col)
 	{
-		if(col.gameObject.tag == "backwall")
-			blop.Play();
-		else
-			blip.Play();
-	}
+        if (col.gameObject.tag == "backwall")
+        {
+            blop.Play();
+            player_score.text += "Player: " + score_point;
+        }
+
+        else if (col.gameObject.tag == "backwall_P")
+        {
+            blop.Play();
+            bot_score.text += "Bot: " + score_point;
+        }
+
+        else
+        {
+            blip.Play();
+        }
+    }
 
 	public void ResetBall()
 	{
